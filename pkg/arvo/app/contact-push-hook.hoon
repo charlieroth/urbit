@@ -39,6 +39,7 @@
   %+  murn  ~(tap in scry-groups:grp)
   |=  rid=res
   ?.  =(our.bowl entity.rid)  ~
+  ?.  (is-managed:grp rid)    ~
   `(poke-self:pass:io push-hook-action+!>([%add rid]))
 ::
 ++  on-save   !>(~)
@@ -93,16 +94,18 @@
   ++  rolo
     ^-  rolodex:store
     =/  ugroup  (scry-group:grp resource)
+    =/  =rolodex:store
+      (scry-for:con rolodex:store /all)
     %-  ~(gas by *rolodex:store)
     ?~  ugroup
-      =/  c=(unit contact:store)  (get-contact:con our.bowl)
+      =/  c=(unit contact:store)  (~(get by rolodex) our.bowl)
       ?~  c
         [our.bowl *contact:store]~
       [our.bowl u.c]~
     %+  murn  ~(tap in (members:grp resource))
     |=  s=ship
     ^-  (unit [ship contact:store])
-    =/  c=(unit contact:store)  (get-contact:con s)
+    =/  c=(unit contact:store)  (~(get by rolodex) s)
     ?~(c ~ `[s u.c])
   --
 ::
@@ -110,7 +113,19 @@
   |=  =vase
   ^-  [(list card) agent]
   =/  =update:store  !<(update:store vase)
-  ?.  ?=(%disallow -.update)  [~ this]
-  :_  this
-  [%give %kick ~[resource+(en-path:res [our.bowl %our])] ~]~
+  ?+  -.update  [~ this]
+      %disallow
+    :_  this
+    [%give %kick ~[resource+(en-path:res [our.bowl %''])] ~]~
+  ::
+      %set-public
+    :_  this
+    ?.  public.update
+      [%give %kick ~[resource+(en-path:res [our.bowl %''])] ~]~
+    %+  murn  ~(tap in scry-groups:grp)
+    |=  rid=res
+    ?:  =(our.bowl entity.rid)  ~
+    ?.  (is-managed:grp rid)    ~
+    `(poke-self:pass:io contact-share+!>([%share entity.rid]))
+  ==
 --

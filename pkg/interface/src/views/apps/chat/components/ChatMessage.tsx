@@ -453,7 +453,7 @@ export const MessageContent = ({
         group={group}
         scrollWindow={scrollWindow}
         ship={content.mention}
-        contact={contacts?.[content.mention]}
+        contact={contacts?.[`~${content.mention}`]}
       />
     );
   } else {

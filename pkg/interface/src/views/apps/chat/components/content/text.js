@@ -105,8 +105,6 @@ export default function TextContent(props) {
     urbitOb.isValidPatp(group[2]) && // valid patp?
     group[0] === content.text; // entire message is room name?
 
-  // console.log(isGroupLink);
-
   if (isGroupLink) {
     const resource = `/ship/${content.text}`;
     return (
@@ -116,6 +114,10 @@ export default function TextContent(props) {
         api={props.api}
         associations={props.associations}
         groups={props.groups}
+        pl='2'
+        border='1'
+        borderRadius='2'
+        borderColor='washedGray'
       />
     );
   } else {

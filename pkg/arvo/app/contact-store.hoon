@@ -3,7 +3,7 @@
 :: data store that holds individual contact data
 ::
 /-  store=contact-store, *resource
-/+  default-agent, dbug, *migrate, contact
+/+  default-agent, dbug, *migrate, contact, verb
 |%
 +$  card  card:agent:gall
 +$  state-4
@@ -25,6 +25,7 @@
 =|  state-4
 =*  state  -
 %-  agent:dbug
+%+  verb  |
 ^-  agent:gall
 |_  =bowl:gall
 +*  this  .
@@ -103,10 +104,18 @@
       |=  [rolo=rolodex:store is-public=?]
       ^-  (quip card _state)
       =/  our-contact  (~(got by rolodex) our.bowl)
-      =.  rolodex  (~(uni by rolodex) rolo)
-      =.  rolodex  (~(put by rolodex) our.bowl our-contact)
-      :_  state(rolodex rolodex)
-      (send-diff [%initial rolodex is-public] %.n)
+      =/  diff-rolo=rolodex:store
+        %-  ~(gas by *rolodex:store)
+        %+  skim  ~(tap in rolo)
+        |=  [=ship =contact:store]
+        ?~  local-con=(~(get by rolodex) ship)  %.y
+        (gth last-updated.contact last-updated.u.local-con)
+      =/  new-rolo=rolodex:store
+        (~(uni by rolodex) diff-rolo)
+      =.  new-rolo  (~(put by new-rolo) our.bowl our-contact)
+      ?:  =(new-rolo rolodex)  `state
+      :_  state(rolodex new-rolo)
+      (send-diff [%initial new-rolo is-public] %.n)
     ::
     ++  handle-add
       |=  [=ship =contact:store]
@@ -117,7 +126,6 @@
               !=(contact(last-updated *@da) u.old(last-updated *@da))
           ==
         [~ state]
-      =.  last-updated.contact  now.bowl
       :-  (send-diff [%add ship contact] =(ship our.bowl))
       state(rolodex (~(put by rolodex) ship contact))
     ::
@@ -132,15 +140,17 @@
       state(rolodex (~(del by rolodex) ship))
     ::
     ++  handle-edit
-      |=  [=ship =edit-field:store]
+      |=  [=ship =edit-field:store timestamp=@da]
       |^
       ^-  (quip card _state)
       =/  old  (~(got by rolodex) ship)
+      ?:  (lte timestamp last-updated.old)
+        [~ state]
       =/  contact  (edit-contact old edit-field)
       ?:  =(old contact)
         [~ state]
-      =.  last-updated.contact  now.bowl
-      :-  (send-diff [%edit ship edit-field] =(ship our.bowl))
+      =.  last-updated.contact  timestamp
+      :-  (send-diff [%edit ship edit-field timestamp] =(ship our.bowl))
       state(rolodex (~(put by rolodex) ship contact))
       ::
       ++  edit-contact

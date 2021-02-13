@@ -17,10 +17,15 @@ import { useHistory } from "react-router-dom";
 import {GroupSummary} from "~/views/landscape/components/GroupSummary";
 import {MetadataUpdatePreview} from "~/types";
 import {GroupLink} from "~/views/components/GroupLink";
+import {lengthOrder} from "~/logic/lib/util";
+import useLocalState from "~/logic/state/local";
 
 
 export function ViewProfile(props: any) {
   const history = useHistory();
+  const { hideNicknames } = useLocalState(({ hideNicknames }) => ({
+    hideNicknames
+  }));
   const { api, contact, nacked, isPublic, ship, associations, groups } = props;
 
   return (
@@ -31,7 +36,7 @@ export function ViewProfile(props: any) {
         width="100%">
         <Center width="100%">
           <Text>
-            {(contact?.nickname ? contact.nickname : "")}
+            {((!hideNicknames && contact?.nickname) ? contact.nickname : "")}
           </Text>
         </Center>
       </Row>
@@ -55,10 +60,10 @@ export function ViewProfile(props: any) {
           </Center>
         </Col>
       { (contact?.groups || []).length > 0 && (
-        <Col gapY="3" my="3" alignItems="center">
-          <Text fontWeight="medium">Pinned Groups</Text>
-          <Row flexWrap="wrap" justifyContent="center" gapX="3">
-            { contact?.groups.map(g => (
+        <Col gapY="3" mb="3" mt="6" alignItems="flex-start">
+          <Text gray>Pinned Groups</Text>
+          <Col>
+            { contact?.groups.sort(lengthOrder).map(g => (
               <GroupLink
                 api={api}
                 resource={g}
@@ -67,25 +72,10 @@ export function ViewProfile(props: any) {
                 measure={() => {}}
               />
             ))}
-          </Row>
+          </Col>
       </Col>
       )}
-      { (ship === `~${window.ship}`) ? (
-          <Row
-            pb={2}
-            alignItems="center"
-            width="100%">
-            <Center width="100%">
-              <Button
-                backgroundColor="black"
-                color="white"
-                onClick={() => {history.push(`/~profile/${ship}/edit`)}}>
-                Edit Profile
-              </Button>
-            </Center>
-          </Row>
-        ) : null
-      }
+
       { (nacked || (!isPublic && ship === `~${window.ship}`)) ? (
         <Box
           height="200px"

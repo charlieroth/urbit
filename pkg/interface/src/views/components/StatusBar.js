@@ -47,7 +47,9 @@ const StatusBar = (props) => {
 
   const anchorRef = useRef(null);
 
-  useTutorialModal('leap', true, anchorRef.current);
+  const leapHighlight = useTutorialModal('leap', true, anchorRef.current);
+
+  const floatLeap = leapHighlight && window.matchMedia('(max-width: 550px)').matches;
 
   return (
     <Box
@@ -63,7 +65,7 @@ const StatusBar = (props) => {
       <Button width="32px" borderColor='washedGray' mr='2' px='2' onClick={() => props.history.push('/')} {...props}>
         <Icon icon='Spaces' color='black'/>
       </Button>
-        <StatusBarItem mr={2} onClick={() => toggleOmnibox()}>
+        <StatusBarItem float={floatLeap} mr={2} onClick={() => toggleOmnibox()}>
         { !props.doNotDisturb && (props.notificationsCount > 0 || invites.length > 0) &&
           (<Box display="block" right="-8px" top="-8px" position="absolute" >
             <Icon color="blue" icon="Bullet" />
@@ -97,7 +99,7 @@ const StatusBar = (props) => {
           >
           <Text color='#000000'>Submit <Text color='#000000' display={['none', 'inline']}>an</Text> issue</Text>
         </StatusBarItem>
-        <StatusBarItem mr={2} onClick={() => props.history.push('/~landscape/messages')}>
+        <StatusBarItem width="32px" mr={2} onClick={() => props.history.push('/~landscape/messages')}>
             <Icon icon="Users"/>
         </StatusBarItem>
         <Dropdown
@@ -105,6 +107,7 @@ const StatusBar = (props) => {
           width="auto"
           alignY="top"
           alignX="right"
+          flexShrink={'0'}
           options={
             <Col
               mt='6'
@@ -126,6 +129,7 @@ const StatusBar = (props) => {
               <SetStatusBarModal
                 ship={`~${ship}`}
                 contact={ourContact}
+                ml='1'
                 api={api} />
               <Row
                 p={1}
@@ -139,6 +143,7 @@ const StatusBar = (props) => {
           }>
           <StatusBarItem
             px={xPadding}
+            width="32px"
             flexShrink='0'
             backgroundColor={bgColor}>
             {profileImage}

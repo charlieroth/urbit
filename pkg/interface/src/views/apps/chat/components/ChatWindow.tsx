@@ -3,6 +3,8 @@ import { RouteComponentProps } from "react-router-dom";
 import _ from "lodash";
 import bigInt, { BigInteger } from 'big-integer';
 
+import { Col } from '@tlon/indigo-react';
+
 import GlobalApi from "~/logic/api/global";
 import { Patp, Path } from "~/types/noun";
 import { Contacts } from "~/types/contact-update";
@@ -26,11 +28,6 @@ type ChatWindowProps = RouteComponentProps<{
   station: string;
 }> & {
   unreadCount: number;
-  isChatMissing: boolean;
-  isChatLoading: boolean;
-  isChatUnsynced: boolean;
-  unreadMsg: Envelope | false;
-  stationPendingMessages: IMessage[];
   graph: Graph;
   contacts: Contacts;
   association: Association;
@@ -128,14 +125,11 @@ export default class ChatWindow extends Component<ChatWindowProps, ChatWindowSta
   }
 
   componentDidUpdate(prevProps: ChatWindowProps, prevState) {
-    const { isChatMissing, history, graph, unreadCount, station } = this.props;
+    const { history, graph, unreadCount, station } = this.props;
 
-    if (isChatMissing) {
-      history.push("/~404");
-    } else if (graph.size !== prevProps.graph.size && this.state.fetchPending) {
+    if (graph.size !== prevProps.graph.size && this.state.fetchPending) {
       this.setState({ fetchPending: false });
     }
-
 
     if (unreadCount > prevProps.unreadCount && this.state.idle) {
       this.calculateUnreadIndex();
@@ -237,17 +231,13 @@ export default class ChatWindow extends Component<ChatWindowProps, ChatWindowSta
 
   render() {
     const {
-      stationPendingMessages,
       unreadCount,
-      isChatLoading,
-      isChatUnsynced,
       api,
       ship,
       station,
       association,
       group,
       contacts,
-      mailboxSize,
       graph,
       history,
       groups,
@@ -264,7 +254,7 @@ export default class ChatWindow extends Component<ChatWindowProps, ChatWindowSta
     const unreadMsg = unreadIndex && graph.get(unreadIndex);
 
     return (
-      <>
+      <Col height='100%' overflow='hidden' position="relative">
         <UnreadNotice
           unreadCount={unreadCount}
           unreadMsg={unreadCount === 1 && unreadMsg && unreadMsg?.post.author === window.ship ? false : unreadMsg}
@@ -311,7 +301,7 @@ export default class ChatWindow extends Component<ChatWindowProps, ChatWindowSta
             this.fetchMessages(newer);
           }}
         />
-      </>
+      </Col>
     );
   }
 }

@@ -14,7 +14,7 @@ import {
   ColProps,
   Icon
 } from '@tlon/indigo-react';
-import { Dropdown } from './Dropdown';
+import RichText from './RichText';
 import { withLocalState } from '~/logic/state/local';
 import { ProfileStatus } from './ProfileStatus';
 
@@ -36,13 +36,11 @@ type ProfileOverlayProps = ColProps & {
 
 class ProfileOverlay extends PureComponent<ProfileOverlayProps, {}> {
   public popoverRef: React.Ref<typeof Col>;
-  public dropdownRef: React.Ref<typeof Col>;
 
   constructor(props) {
     super(props);
 
     this.popoverRef = React.createRef();
-    this.dropdownRef = React.createRef();
     this.onDocumentClick = this.onDocumentClick.bind(this);
   }
 
@@ -57,9 +55,9 @@ class ProfileOverlay extends PureComponent<ProfileOverlayProps, {}> {
   }
 
   onDocumentClick(event) {
-    const { popoverRef, dropdownRef } = this;
+    const { popoverRef } = this;
     // Do nothing if clicking ref's element or descendent elements
-    if (!popoverRef.current || dropdownRef?.current?.contains(event.target) || popoverRef?.current?.contains(event.target)) {
+    if (!popoverRef.current || popoverRef?.current?.contains(event.target)) {
       return;
     }
 
@@ -125,45 +123,6 @@ class ProfileOverlay extends PureComponent<ProfileOverlayProps, {}> {
         {...rest}
       >
         <Row color='black' width='100%' height="3rem">
-          <Dropdown
-          dropWidth="150px"
-          width="auto"
-          alignY="top"
-          alignX="left"
-          options={
-            <Col
-              mt='4'
-              p='1'
-              backgroundColor="white"
-              color="washedGray"
-              border={1}
-              borderRadius={2}
-              borderColor="lightGray"
-              ref={this.dropdownRef}
-              boxShadow="0px 0px 0px 3px">
-                <Row
-                  p={1}
-                  color='black'
-                  cursor='pointer'
-                  fontSize={0}
-                  onClick={() => history.push(`/~profile/~${ship}`)}>
-                View Profile
-              </Row>
-              {(!isOwn) && (
-                <Row
-                  p={1}
-                  color='black'
-                  cursor='pointer'
-                  fontSize={0}
-                  onClick={() => history.push(`/~landscape/dm/${ship}`)}
-                >
-                  Send Message
-                </Row>
-              )}
-            </Col>
-          }>
-            <Icon icon="Menu" mr='3'/>
-          </Dropdown>
           {(!isOwn) && (
           <Icon icon="Chat" size={16} onClick={() => history.push(`/~landscape/dm/${ship}`)}/>
           )}
@@ -174,7 +133,7 @@ class ProfileOverlay extends PureComponent<ProfileOverlayProps, {}> {
           onClick={() => history.push(`/~profile/~${ship}`)}>
           {img}
         </Box>
-        <Col alignItems="end" justifyContent="flex-end" overflow="hidden">
+        <Col alignItems="end" justifyContent="flex-end" overflow="hidden" minWidth='0'>
           <Row width="100%" >
             <Text
               fontWeight='600'
@@ -194,9 +153,12 @@ class ProfileOverlay extends PureComponent<ProfileOverlayProps, {}> {
               contact={contact}
             />
           ) : (
-            <Text gray>
+              <RichText display='inline-block' width='100%' minWidth='0' textOverflow='ellipsis'
+                overflow='hidden'
+                whiteSpace='pre'
+                lineHeight="tall" disableRemoteContent gray>
               {contact?.status ? contact.status : ''}
-            </Text>
+            </RichText>
           )
           }
         </Col>
