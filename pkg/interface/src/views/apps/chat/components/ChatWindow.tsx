@@ -15,7 +15,7 @@ import { Graph } from '~/types';
 
 import VirtualScroller from '~/views/components/VirtualScroller';
 
-import ChatMessage, { MessagePlaceholder } from './ChatMessageRefactor';
+import ChatMessage, { MessagePlaceholder } from './ChatMessage';
 import { UnreadNotice } from './unread-notice';
 
 const INITIAL_LOAD = 20;
