@@ -81,6 +81,7 @@ interface ChatMessageProps {
   history: any;
   api: any;
   highlighted?: boolean;
+  renderSigil?: boolean;
 }
 
 export default class ChatMessage extends Component<ChatMessageProps> {
@@ -121,9 +122,15 @@ export default class ChatMessage extends Component<ChatMessageProps> {
       associations
     } = this.props;
 
-    const renderSigil = Boolean(
-      (nextMsg && msg.author !== nextMsg.author) || !nextMsg || msg.number === 1
-    );
+    let { renderSigil } = this.props;
+
+    if (renderSigil === undefined) {
+      renderSigil = Boolean(
+        (nextMsg && msg.author !== nextMsg.author) ||
+          !nextMsg ||
+          msg.number === 1
+      );
+    }
 
     const dayBreak =
       nextMsg &&
