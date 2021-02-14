@@ -122,7 +122,13 @@ export default function TextContent(props) {
     );
   } else {
     return (
-      <Text>
+      <Text
+        flexShrink={0}
+        color='black'
+        fontSize={props.fontSize ? props.fontSize : '14px'}
+        lineHeight={props.lineHeight ? props.lineHeight : '20px'}
+        style={{ overflowWrap: 'break-word' }}
+      >
         <MessageMarkdown source={content.text} />
       </Text>
     );
